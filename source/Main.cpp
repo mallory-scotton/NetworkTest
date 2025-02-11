@@ -30,6 +30,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "network/Server.hpp"
+#include "network/ServerDiscovery.hpp"
 #include <iostream>
 #include <thread>
 #include <signal.h>
@@ -55,6 +56,9 @@ int main(void)
 
     try {
         tkd::Server server(55001);
+
+        tkd::ServerDiscovery discovery(55001);
+        discovery.startBroadcasting();
 
         std::thread sthread([&server](void){
             try {
@@ -91,6 +95,7 @@ int main(void)
 #include <SFML/System.hpp>
 #include "utils/Types.hpp"
 #include "network/Client.hpp"
+#include "network/ServerDiscovery.hpp"
 
 class Object
 {
@@ -138,9 +143,27 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 int main(void)
 {
+    tkd::ServerDiscovery discovery(0);
+    bool notFound = true;
+    std::string address;
+    uint16_t port;
+
+    discovery.startListening(
+        [&notFound, &address, &port](const std::string& a, uint16_t p)
+        {
+            address = a; port = p;
+            std::cout << "Found server at " << address << ":" << port << std::endl;
+            notFound = false;
+        }
+    );
+
+    while (notFound);
+
+    discovery.stop();
+
     sf::RenderWindow window(sf::VideoMode(800, 600), "Network", sf::Style::Close);
     sf::Event event;
-    tkd::Client client("127.0.0.1", 55001);
+    tkd::Client client(address, port);
     Object player;
     std::map<int, std::unique_ptr<Object>> enemies;
 
