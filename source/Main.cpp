@@ -146,6 +146,8 @@ int main(void)
 
     bool UP = false, DOWN = false, LEFT = false, RIGHT = false;
 
+    window.setFramerateLimit(60);
+
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -161,6 +163,13 @@ int main(void)
                 if (event.key.code == sf::Keyboard::Right) RIGHT = false;
                 if (event.key.code == sf::Keyboard::Up)    UP = false;
                 if (event.key.code == sf::Keyboard::Down)  DOWN = false;
+            }
+            if (event.type == sf::Event::MouseMoved) {
+                tkd::Vec2f pos(event.mouseMove.x, event.mouseMove.y);
+
+                player.setPosition(pos);
+                tkd::Packet packet(tkd::Packet::Type::PlayerMove, pos);
+                client.sendPacket(packet);
             }
         }
 
