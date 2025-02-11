@@ -129,7 +129,7 @@ void Server::handleNewConnections(void)
             Packet packet(Packet::Type::PlayerJoined);
 
             packet << id << Vec2f(0.f);
-            broadcastPacket(packet);
+            broadcastPacket(packet, socket);
         }
 
         std::cout << "Client " << id << " connected" << std::endl;
@@ -155,7 +155,7 @@ void Server::handleClientMessages(void)
                 {
                     packet >> m_clients[it->first]->position;
                     result << it->first << m_clients[it->first]->position;
-                    broadcastPacket(result);
+                    broadcastPacket(result, m_clients[it->first]->socket);
                     break;
                 }
                 default:
@@ -187,15 +187,17 @@ void Server::handleDisconnections(std::map<int, std::unique_ptr<ClientInfo>>::it
 
     closesocket(it->second->socket);
     m_clients.erase(it);
-    broadcastPacket(packet);
+    broadcastPacket(packet, it->second->socket);
     std::cout << "Client " << id << " disconnected" << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Server::broadcastPacket(Packet& packet)
+void Server::broadcastPacket(Packet& packet, Socket socket)
 {
-    for (const auto& client : m_clients)
-        send(client.second->socket, packet.data(), packet.size(), 0);
+    for (const auto& client : m_clients) {
+        if (client.second->socket != socket)
+            send(client.second->socket, packet.data(), packet.size(), 0);
+    }
 }
 
 } // namespace tkd

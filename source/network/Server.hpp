@@ -126,7 +126,7 @@ private:
     /// \param packet
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void broadcastPacket(Packet& packet);
+    void broadcastPacket(Packet& packet, Socket socket);
 };
 
 } // namespace tkd

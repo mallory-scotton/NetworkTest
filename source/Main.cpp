@@ -164,13 +164,6 @@ int main(void)
                 if (event.key.code == sf::Keyboard::Up)    UP = false;
                 if (event.key.code == sf::Keyboard::Down)  DOWN = false;
             }
-            if (event.type == sf::Event::MouseMoved) {
-                tkd::Vec2f pos(event.mouseMove.x, event.mouseMove.y);
-
-                player.setPosition(pos);
-                tkd::Packet packet(tkd::Packet::Type::PlayerMove, pos);
-                client.sendPacket(packet);
-            }
         }
 
         if (UP || DOWN || LEFT || RIGHT) {
