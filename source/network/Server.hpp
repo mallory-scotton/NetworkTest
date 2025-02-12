@@ -118,7 +118,9 @@ private:
     /// \param it
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void handleDisconnections(std::map<int, std::unique_ptr<ClientInfo>>::iterator it);
+    void handleDisconnections(
+        std::map<int, std::unique_ptr<ClientInfo>>::iterator it
+    );
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief

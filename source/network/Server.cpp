@@ -180,14 +180,16 @@ void Server::handleClientMessages(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Server::handleDisconnections(std::map<int, std::unique_ptr<ClientInfo>>::iterator it)
+void Server::handleDisconnections(
+    std::map<int, std::unique_ptr<ClientInfo>>::iterator it
+)
 {
     int id = it->first;
     Packet packet(Packet::Type::PlayerLeft, id);
 
     closesocket(it->second->socket);
-    m_clients.erase(it);
     broadcastPacket(packet, it->second->socket);
+    m_clients.erase(it);
     std::cout << "Client " << id << " disconnected" << std::endl;
 }
 
