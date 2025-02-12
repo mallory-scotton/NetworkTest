@@ -1,38 +1,112 @@
+///////////////////////////////////////////////////////////////////////////////
+///
+/// MIT License
+///
+/// Copyright(c) 2025 TekyoDrift
+///
+/// Permission is hereby granted, free of charge, to any person obtaining a
+/// copy of this software and associated documentation files (the "Software"),
+/// to deal in the Software without restriction, including without limitation
+/// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+/// and/or sell copies of the Software, and to permit persons to whom the
+/// Software is furnished to do so, subject to the following coditions:
+///
+/// The above copyright notice and this permission notice shall be included
+/// in all copies or substantial portions of the Software?
+///
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+/// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+/// DEALINGS IN THE SOFTWARE.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// Header guard
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+///////////////////////////////////////////////////////////////////////////////
+// Dependencies
+///////////////////////////////////////////////////////////////////////////////
+#include "utils/Types.hpp"
 #include <string>
 #include <thread>
 #include <atomic>
 #include <functional>
 
-namespace tkd {
+///////////////////////////////////////////////////////////////////////////////
+// Namespace tkd
+///////////////////////////////////////////////////////////////////////////////
+namespace tkd
+{
 
-class ServerDiscovery {
+///////////////////////////////////////////////////////////////////////////////
+/// \brief Class to handle server discovery using UDP
+///
+///////////////////////////////////////////////////////////////////////////////
+class ServerDiscovery
+{
 public:
-    static const uint16_t DISCOVERY_PORT = 55000;  // Port for discovery messages
-    static const char* DISCOVERY_MESSAGE;          // Magic message to identify our game
+    ///////////////////////////////////////////////////////////////////////////
+    // Constant static properties
+    ///////////////////////////////////////////////////////////////////////////
+    static const uint16_t DISCOVERY_PORT = 55000;
+    static const char* DISCOVERY_MESSAGE;
 
-    // Callback type for when a server is discovered
-    using ServerFoundCallback = std::function<void(const std::string& address, uint16_t port)>;
+    ///////////////////////////////////////////////////////////////////////////
+    // Custom type alias
+    ///////////////////////////////////////////////////////////////////////////
+    using ServerFoundCallback = std::function<void(
+        const std::string& address,
+        uint16_t port
+    )>;
 
 private:
-    std::atomic<bool> m_running;
-    std::thread m_thread;
-    ServerFoundCallback m_callback;
-    uint16_t m_gamePort;  // The actual game server port
+    ///////////////////////////////////////////////////////////////////////////
+    // Private properties
+    ///////////////////////////////////////////////////////////////////////////
+    std::atomic<bool> m_running;        //<! Message status
+    std::thread m_thread;               //<! The current thread
+    ServerFoundCallback m_callback;     //<! The callback while listening
+    Uint16 m_gamePort;                  //<! The actual game port
 
 public:
-    ServerDiscovery(uint16_t gamePort) : m_running(false), m_gamePort(gamePort) {}
-    ~ServerDiscovery() { stop(); }
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Default discovery constructor
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    ServerDiscovery(Uint16 gamePort = 0);
 
-    // Start broadcasting server presence
-    void startBroadcasting();
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Default destructor
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    ~ServerDiscovery();
+
+public:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Start broadcasting server presence
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void startBroadcasting(void);
     
-    // Start listening for servers
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Start listening for servers
+    ///
+    /// \param callback The function to callback on response
+    ///
+    ///////////////////////////////////////////////////////////////////////////
     void startListening(ServerFoundCallback callback);
     
-    // Stop broadcasting/listening
-    void stop();
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Stop broadcasting/listening
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void stop(void);
 };
 
 } // namespace tkd
