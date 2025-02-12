@@ -40,6 +40,7 @@ CXXFLAGS			=	-std=c++20 \
 						-lsfml-window \
 						-lsfml-audio \
 						-lz \
+						-lGL \
 						-lm
 
 TARGET				=	neon-abyss
@@ -57,16 +58,15 @@ OBJECTS				=	$(SOURCES:.cpp=.o)
 ## Makefile logic
 ###############################################################################
 
-all:
-	make fclean
-	make build
-	make clean
-	make server
+all: build
 
 %.o: %.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
-build: $(OBJECTS)
+clear:
+	rm -f source/Main.o
+
+build: clear $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(CXXFLAGS)
 
 debug: CXXFLAGS += -g3
@@ -74,7 +74,7 @@ debug: build
 
 server: TARGET = $(SERVER_TARGET)
 server: CXXFLAGS += -DNEON_SERVER
-server: build
+server: clear build
 
 clean:
 	find . -type f -iname "*.o" -delete
