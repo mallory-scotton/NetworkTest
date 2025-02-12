@@ -60,9 +60,9 @@ void Menu::handleEvent(sf::Event event)
         Vec2f pos(event.mouseMove.x, event.mouseMove.y);
 
         if (m_button.getGlobalBounds().contains(pos))
-            m_button.setScale({1.1, 1.1});
+            m_button.setScale(Vec2f(1.1f));
         else
-            m_button.setScale({1, 1});
+            m_button.setScale(Vec2f(1.f));
     }
 }
 
@@ -73,8 +73,10 @@ void Menu::handlePacket(Packet packet)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Menu::update(void)
-{}
+void Menu::update(float deltaT)
+{
+    IGNORE(deltaT);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 void Menu::render(void)

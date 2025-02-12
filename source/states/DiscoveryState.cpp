@@ -29,6 +29,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "DiscoveryState.hpp"
 #include "utils/Macros.hpp"
+#include "states/PlayState.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace tkd::States
@@ -57,7 +58,22 @@ void Discovery::init(void)
 ///////////////////////////////////////////////////////////////////////////////
 void Discovery::handleEvent(sf::Event event)
 {
-    IGNORE(event);
+    if (event.type == sf::Event::MouseButtonPressed) {
+        Uint32 idx = 0;
+        Vec2f pos(event.mouseButton.x, event.mouseButton.y);
+
+        for (auto [address, port] : m_servers) {
+            m_shape.setPosition({400, 50 + 75 * (float)idx});
+            idx++;
+            if (
+                m_shape.getGlobalBounds().contains(pos) &&
+                m_client->connect(address, port)
+            ) {
+                m_manager->change(std::make_unique<States::Play>());
+                break;
+            }
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,8 +83,10 @@ void Discovery::handlePacket(Packet packet)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Discovery::update(void)
-{}
+void Discovery::update(float deltaT)
+{
+    IGNORE(deltaT);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 void Discovery::render(void)

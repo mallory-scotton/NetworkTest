@@ -41,8 +41,8 @@ namespace tkd
 ///////////////////////////////////////////////////////////////////////////////
 Engine::Engine(bool debug)
     : m_window(sf::VideoMode(800, 600), "MyNeonAbyss", sf::Style::Close)
-    , m_manager(m_window)
     , m_debug(debug)
+    , m_manager(m_window, &m_client, &m_debug)
 {
     m_manager.push(std::make_unique<States::Menu>());
 }
@@ -79,6 +79,7 @@ void Engine::start(void)
     tkd::Packet packet;
     sf::Clock clock;
     sf::Time restart;
+    float deltaT;
 
     if (!ImGui::SFML::Init(m_window))
         exit(84);
@@ -87,6 +88,8 @@ void Engine::start(void)
 
     while (m_window.isOpen()) {
         restart = clock.restart();
+
+        deltaT = restart.asSeconds();
 
         if (m_debug)
             ImGui::SFML::Update(m_window, restart);
@@ -106,7 +109,7 @@ void Engine::start(void)
         while (m_client.receivePacket(packet))
             m_manager.handlePacket(packet);
 
-        m_manager.update();
+        m_manager.update(deltaT);
 
         renderFpsDisplay();
 

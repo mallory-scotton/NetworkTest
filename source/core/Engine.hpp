@@ -54,9 +54,9 @@ private:
     // Private properties
     ///////////////////////////////////////////////////////////////////////////
     sf::RenderWindow m_window;      //<! The rendering window
-    StateManager m_manager;         //<! The state manager
     Client m_client;                //<! The engine network client
     bool m_debug;                   //<! Is the debug mode activated
+    StateManager m_manager;         //<! The state manager
 
 private:
     ///////////////////////////////////////////////////////////////////////////

@@ -36,8 +36,14 @@ namespace tkd
 {
 
 ///////////////////////////////////////////////////////////////////////////////
-StateManager::StateManager(sf::RenderWindow& window)
+StateManager::StateManager(
+    sf::RenderWindow& window,
+    Client* client,
+    bool* debug
+)
     : m_window(window)
+    , m_client(client)
+    , m_debug(debug)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,6 +53,8 @@ void StateManager::push(State state)
         return;
     state->m_manager = this;
     state->m_window = &m_window;
+    state->m_client = m_client;
+    state->m_debug = m_debug;
     state->init();
     m_states.push(std::move(state));
 }
@@ -80,10 +88,10 @@ void StateManager::handlePacket(Packet packet)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void StateManager::update(void)
+void StateManager::update(float deltaT)
 {
     if (!m_states.empty())
-        m_states.top()->update();
+        m_states.top()->update(deltaT);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
