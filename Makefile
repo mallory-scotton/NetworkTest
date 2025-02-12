@@ -67,7 +67,7 @@ DEPENDENCIES		=	$(SOURCES:.cpp=.d)
 ## Makefile logic
 ###############################################################################
 
-ifeq ($(shell git rev-parse HEAD &>/dev/null; echo $$?), 0)
+ifeq ($(shell git rev-parse HEAD > /dev/null; echo $$?),0)
 	AUTHOR			:=	$(shell git log --format='%aN' | sort -u | awk \
 						'{printf "%s, ", $$0}' | rev | cut -c 3- | rev)
 	DATE			:=	$(shell git log -1 --date=format:"%Y/%m/%d %T" \
