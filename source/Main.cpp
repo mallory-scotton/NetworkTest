@@ -30,11 +30,14 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "network/Server.hpp"
+#include "utils/Types.hpp"
 #include "network/ServerDiscovery.hpp"
+#include "utils/Args.hpp"
 #include <iostream>
 #include <thread>
 #include <signal.h>
 #include <atomic>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 std::atomic<bool> running(true);
@@ -47,17 +50,35 @@ void signalHandler(int signum)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int main(void)
+int main(int argc, char *argv[])
 {
     std::cout << "Starting game server..." << std::endl;
 
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
-    try {
-        tkd::Server server(55001);
+    tkd::Uint16 port = 55001;
 
-        tkd::ServerDiscovery discovery(55001);
+    tkd::Args::addHandler("--port",
+    [&port](const std::string& value)
+    {
+        if (value.empty()) {
+            std::cerr << "Invalid port" << std::endl;
+            return;
+        }
+        try {
+            port = std::stoi(value);
+        } catch (const std::exception& e) {
+            std::cerr << "Unable to process port: " << e.what() << std::endl;
+        }
+    });
+
+    tkd::Args::handleArgs(argc, argv);
+
+    try {
+        tkd::Server server(port);
+
+        tkd::ServerDiscovery discovery(port);
         discovery.startBroadcasting();
 
         std::thread sthread([&server](void){
