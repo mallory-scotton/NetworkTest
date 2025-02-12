@@ -1,0 +1,78 @@
+///////////////////////////////////////////////////////////////////////////////
+///
+/// MIT License
+///
+/// Copyright(c) 2025 TekyoDrift
+///
+/// Permission is hereby granted, free of charge, to any person obtaining a
+/// copy of this software and associated documentation files (the "Software"),
+/// to deal in the Software without restriction, including without limitation
+/// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+/// and/or sell copies of the Software, and to permit persons to whom the
+/// Software is furnished to do so, subject to the following coditions:
+///
+/// The above copyright notice and this permission notice shall be included
+/// in all copies or substantial portions of the Software?
+///
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+/// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+/// DEALINGS IN THE SOFTWARE.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// Header guard
+///////////////////////////////////////////////////////////////////////////////
+#pragma once
+
+///////////////////////////////////////////////////////////////////////////////
+// Dependencies
+///////////////////////////////////////////////////////////////////////////////
+#include "states/StateManager.hpp"
+#include "network/Client.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
+///////////////////////////////////////////////////////////////////////////////
+// Namespace tkd
+///////////////////////////////////////////////////////////////////////////////
+namespace tkd
+{
+
+///////////////////////////////////////////////////////////////////////////////
+/// \brief Main class for the game engine
+///
+///////////////////////////////////////////////////////////////////////////////
+class Engine
+{
+private:
+    ///////////////////////////////////////////////////////////////////////////
+    // Private properties
+    ///////////////////////////////////////////////////////////////////////////
+    sf::RenderWindow m_window;      //<! The rendering window
+    StateManager m_manager;         //<! The state manager
+    Client m_client;                //<! The engine network client
+    bool m_debug;                   //<! Is the debug mode activated
+
+public:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Default engine constructor
+    ///
+    /// \param debug Put the engine in debug mode
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    Engine(bool debug = false);
+
+public:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Start the game engine loop
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void start(void);
+};
+
+} // namespace tkd
