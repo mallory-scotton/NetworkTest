@@ -41,7 +41,9 @@ namespace tkd
 {
 
 typedef signed char Byte;               //<!
+typedef unsigned char UByte;            //<!
 typedef std::vector<Byte> Data;         //<!
+typedef std::vector<UByte> UData;       //<!
 
 typedef unsigned char Uint8;            //<!
 typedef unsigned short Uint16;          //<!
