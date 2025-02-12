@@ -53,6 +53,7 @@ namespace tkd
 ServerDiscovery::ServerDiscovery(Uint16 gamePort)
     : m_running(false)
     , m_gamePort(gamePort)
+    , m_socket(INVALID_SOCKET_VALUE)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,14 +71,14 @@ void ServerDiscovery::startBroadcasting(void)
 
     m_thread = std::thread([this](void)
     {
-        SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
-        if (sock < 0) {
+        m_socket = socket(AF_INET, SOCK_DGRAM, 0);
+        if (m_socket < 0) {
             std::cerr << "Failed to create discovery socket" << std::endl;
             return;
         }
 
         int broadcast = 1;
-        setsockopt(sock, SOL_SOCKET, SO_BROADCAST, 
+        setsockopt(m_socket, SOL_SOCKET, SO_BROADCAST, 
                    (char*)&broadcast, sizeof(broadcast));
 
         sockaddr_in broadcastAddr;
@@ -90,14 +91,15 @@ void ServerDiscovery::startBroadcasting(void)
                 DISCOVERY_MESSAGE, m_gamePort);
 
         while (m_running) {
-            sendto(sock, message, strlen(message), 0,
+            sendto(m_socket, message, strlen(message), 0,
                    (struct sockaddr*)&broadcastAddr, 
                    sizeof(broadcastAddr));
-            
+
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        closesocket(sock);
+        closesocket(m_socket);
+        m_socket = INVALID_SOCKET_VALUE;
     });
 }
 
@@ -111,21 +113,30 @@ void ServerDiscovery::startListening(ServerFoundCallback callback)
 
     m_thread = std::thread([this](void)
     {
-        SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
-        if (sock < 0) {
+        m_socket = socket(AF_INET, SOCK_DGRAM, 0);
+        if (m_socket < 0) {
             std::cerr << "Failed to create discovery socket" << std::endl;
             return;
         }
+
+    #ifdef _WIN32
+        unsigned long mode = 1;
+        ioctlsocket(m_socket, FIONBIO, &mode);
+    #else
+        int flags = fcntl(m_socket, F_GETFL, 0);
+        fcntl(m_socket, F_SETFL, flags | O_NONBLOCK);
+    #endif
 
         sockaddr_in listenAddr;
         listenAddr.sin_family = AF_INET;
         listenAddr.sin_port = htons(DISCOVERY_PORT);
         listenAddr.sin_addr.s_addr = INADDR_ANY;
 
-        if (bind(sock, (struct sockaddr*)&listenAddr, 
+        if (bind(m_socket, (struct sockaddr*)&listenAddr, 
                 sizeof(listenAddr)) < 0) {
             std::cerr << "Failed to bind discovery socket" << std::endl;
-            closesocket(sock);
+            closesocket(m_socket);
+            m_socket = INVALID_SOCKET_VALUE;
             return;
         }
 
@@ -134,7 +145,7 @@ void ServerDiscovery::startListening(ServerFoundCallback callback)
             sockaddr_in senderAddr;
             socklen_t senderLen = sizeof(senderAddr);
 
-            int received = recvfrom(sock, buffer, sizeof(buffer), 0,
+            int received = recvfrom(m_socket, buffer, sizeof(buffer), 0,
                                   (struct sockaddr*)&senderAddr, &senderLen);
 
             if (received > 0) {
@@ -148,14 +159,14 @@ void ServerDiscovery::startListening(ServerFoundCallback callback)
                     inet_ntop(AF_INET, &(senderAddr.sin_addr), 
                              ipStr, INET_ADDRSTRLEN);
 
-                    if (m_callback) {
+                    if (m_callback)
                         m_callback(ipStr, port);
-                    }
                 }
             }
         }
 
-        closesocket(sock);
+        closesocket(m_socket);
+        m_socket = INVALID_SOCKET_VALUE;
     });
 }
 
@@ -165,6 +176,13 @@ void ServerDiscovery::stop(void)
     if (!m_running)
         return;
     m_running = false;
+    if (m_socket != INVALID_SOCKET_VALUE) {
+    #ifdef _WIN32
+        shutdown(m_socket, SD_BOTH);
+    #else
+        shutdown(m_socket, SHUT_RDWR);
+    #endif
+    }
     if (m_thread.joinable())
         m_thread.join();
 }

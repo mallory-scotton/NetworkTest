@@ -33,6 +33,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "utils/Types.hpp"
+#include "network/Network.hpp"
 #include <string>
 #include <thread>
 #include <atomic>
@@ -54,7 +55,7 @@ public:
     ///////////////////////////////////////////////////////////////////////////
     // Constant static properties
     ///////////////////////////////////////////////////////////////////////////
-    static const uint16_t DISCOVERY_PORT = 55000;
+    static const Uint16 DISCOVERY_PORT = 55000;
     static const char* DISCOVERY_MESSAGE;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -62,7 +63,7 @@ public:
     ///////////////////////////////////////////////////////////////////////////
     using ServerFoundCallback = std::function<void(
         const std::string& address,
-        uint16_t port
+        Uint16 port
     )>;
 
 private:
@@ -73,6 +74,7 @@ private:
     std::thread m_thread;               //<! The current thread
     ServerFoundCallback m_callback;     //<! The callback while listening
     Uint16 m_gamePort;                  //<! The actual game port
+    Socket m_socket;                    //<! The socket for the UDP
 
 public:
     ///////////////////////////////////////////////////////////////////////////
