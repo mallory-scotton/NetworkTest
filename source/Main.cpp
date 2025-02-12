@@ -90,12 +90,12 @@ int main(void)
 ///////////////////////////////////////////////////////////////////////////////
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
+#include "core/Engine.hpp"
+#include "network/ServerDiscovery.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include "utils/Types.hpp"
-#include "network/Client.hpp"
-#include "network/ServerDiscovery.hpp"
 
 class Object
 {
@@ -142,6 +142,15 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(void)
+{
+    tkd::Engine engine;
+
+    engine.start();
+    return (EXIT_SUCCESS);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+int main2(void)
 {
     tkd::ServerDiscovery discovery(0);
     bool notFound = true;
@@ -265,6 +274,7 @@ int main(void)
 
         window.display();
     }
+    return (EXIT_SUCCESS);
 }
 
 #endif
