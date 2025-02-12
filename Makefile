@@ -47,27 +47,81 @@ TARGET				=	neon-abyss
 SERVER_TARGET		=	neon-abyss-server
 
 ###############################################################################
+## Metadata
+###############################################################################
+
+AUTHOR				=	mallory-scotton
+DATE				=	
+HASH				=	
+
+###############################################################################
 ## Sources
 ###############################################################################
 
 SOURCE_DIRECTORY	=	source
 SOURCES				=	$(shell find $(SOURCE_DIRECTORY) -name '*.cpp')
 OBJECTS				=	$(SOURCES:.cpp=.o)
+DEPENDENCIES		=	$(SOURCES:.cpp=.d)
 
 ###############################################################################
 ## Makefile logic
 ###############################################################################
 
+ifeq ($(shell git rev-parse HEAD &>/dev/null; echo $$?), 0)
+	AUTHOR			:=	$(shell git log --format='%aN' | sort -u | awk \
+						'{printf "%s, ", $$0}' | rev | cut -c 3- | rev)
+	DATE			:=	$(shell git log -1 --date=format:"%Y/%m/%d %T" \
+						--format="%ad")
+	HASH			:=	$(shell git rev-parse --short HEAD)
+endif
+
+MFLAGS				:=	$(CXXFLAGS)
+
+# Constant for colors
+COM_COLOR			=	\033[0;34m
+OBJ_COLOR			=	\033[0;36m
+OK_COLOR			=	\033[0;32m
+ERROR_COLOR			=	\033[0;31m
+WARN_COLOR			=	\033[0;33m
+NO_COLOR			=	\033[m
+
+###############################################################################
+## Makefile rules
+###############################################################################
+
+-include $(DEPENDENCIES)
+
 all: build
 
 %.o: %.cpp
-	$(CXX) -c $< -o $@ $(CXXFLAGS)
+	@./scripts/progress.sh
+	@./scripts/run.sh "$(CXX) -c $< -o $@ $(CXXFLAGS)" "$@"
 
 clear:
-	rm -f source/Main.o
+	@rm -f source/Main.o
 
-build: clear $(OBJECTS)
-	$(CXX) -o $(TARGET) $(OBJECTS) $(CXXFLAGS)
+header:
+	@printf "%b" "$(OK_COLOR)"
+	@cat .art
+	@echo
+ifneq ($(HASH),)
+	@printf "%b" "$(OBJ_COLOR)Name:	$(WARN_COLOR)$(TARGET)@$(HASH)\n"
+else
+	@printf "%b" "$(OBJ_COLOR)Name:	$(WARN_COLOR)$(TARGET)\n"
+endif
+	@printf "%b" "$(OBJ_COLOR)Author:	$(WARN_COLOR)$(AUTHOR)\n"
+	@printf "%b" "$(OBJ_COLOR)Date: 	$(WARN_COLOR)$(DATE)\n\033[m"
+	@printf "%b" "$(OBJ_COLOR)CC: 	$(WARN_COLOR)$(CXX)\n\033[m"
+	@printf "%b" "$(OBJ_COLOR)Flags: 	$(WARN_COLOR)$(MFLAGS)\n\033[m"
+	@echo
+
+setup: header
+	@./scripts/setup.sh "$(SOURCES)" "$(EXTENSION)"
+
+build: CXXFLAGS += -MMD -MF $(@:.o=.d)
+build: setup clear $(OBJECTS)
+	@./scripts/run.sh "$(CXX) -o $(TARGET) $(OBJECTS) $(CXXFLAGS)" "$@"
+	@rm -f .build
 
 debug: CXXFLAGS += -g3
 debug: build
@@ -77,16 +131,16 @@ server: CXXFLAGS += -DNEON_SERVER
 server: clear build
 
 clean:
-	find . -type f -iname "*.o" -delete
-	find . -type f -iname "*.d" -delete
-	find . -type f -iname "*.gcda" -delete
-	find . -type f -iname "*.gcno" -delete
-	find . -type f -iname "*.html" -delete
-	find . -type f -iname "*.css" -delete
+	@find . -type f -iname "*.o" -delete
+	@find . -type f -iname "*.d" -delete
+	@find . -type f -iname "*.gcda" -delete
+	@find . -type f -iname "*.gcno" -delete
+	@find . -type f -iname "*.html" -delete
+	@find . -type f -iname "*.css" -delete
 
 fclean: clean
-	rm -f $(TARGET)
-	rm -f $(SERVER_TARGET)
+	@rm -f $(TARGET)
+	@rm -f $(SERVER_TARGET)
 
 re: fclean build
 res: fclean server
