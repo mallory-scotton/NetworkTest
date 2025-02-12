@@ -7,6 +7,9 @@
 # Unigore all dirs
 !*/
 
+# Ignore log
+*.log
+
 # Builded objects
 build/
 *.d
