@@ -28,6 +28,8 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "MenuState.hpp"
+#include "utils/Macros.hpp"
+#include "states/DiscoveryState.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace tkd::States
@@ -37,18 +39,37 @@ namespace tkd::States
 
 ///////////////////////////////////////////////////////////////////////////////
 void Menu::init(void)
-{}
+{
+    m_button.setSize({200, 50});
+    m_button.setOrigin({100, 25});
+    m_button.setPosition({400, 300});
+    m_button.setFillColor(sf::Color::Magenta);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 void Menu::handleEvent(sf::Event event)
 {
-    (void)event;
+    if (event.type == sf::Event::MouseButtonPressed) {
+        Vec2f pos(event.mouseButton.x, event.mouseButton.y);
+
+        if (m_button.getGlobalBounds().contains(pos))
+            m_manager->change(std::make_unique<States::Discovery>());
+    }
+
+    if (event.type == sf::Event::MouseMoved) {
+        Vec2f pos(event.mouseMove.x, event.mouseMove.y);
+
+        if (m_button.getGlobalBounds().contains(pos))
+            m_button.setScale({1.1, 1.1});
+        else
+            m_button.setScale({1, 1});
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Menu::handlePacket(Packet packet)
 {
-    (void)packet;
+    IGNORE(packet);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,6 +78,8 @@ void Menu::update(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 void Menu::render(void)
-{}
+{
+    m_window->draw(m_button);
+}
 
 } // namespace tkd::States
