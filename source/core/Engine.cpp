@@ -120,6 +120,9 @@ void Engine::start(void)
             m_window.close();
     }
 
+    while (!m_manager.empty())
+        m_manager.pop();
+
     ImGui::SFML::Shutdown(m_window);
 }
 
