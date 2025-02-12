@@ -15,6 +15,10 @@ build/
 *.so
 *.dll
 
+# Configuration file
+*.ini
+*.env
+
 # Unit tests files
 *.gcda
 *.gcno
