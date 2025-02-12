@@ -82,7 +82,8 @@ void Engine::start(void)
 
     if (!ImGui::SFML::Init(m_window))
         exit(84);
-    ImGui::SFML::Update(m_window, sf::Time());
+    if (!m_debug)
+        ImGui::SFML::Update(m_window, sf::Time());
 
     while (m_window.isOpen()) {
         restart = clock.restart();
