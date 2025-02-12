@@ -90,12 +90,14 @@ int main(void)
 ///////////////////////////////////////////////////////////////////////////////
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
+#include "utils/Types.hpp"
 #include "core/Engine.hpp"
+#include "utils/Args.hpp"
+#include "utils/Macros.hpp"
 #include "network/ServerDiscovery.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
-#include "utils/Types.hpp"
 
 class Object
 {
@@ -141,11 +143,24 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-int main(void)
+int main(int argc, char *argv[])
 {
-    tkd::Engine engine;
+    bool debug = false;
 
-    engine.start();
+    tkd::Args::addHandler("--debug",
+    [&debug](const std::string& value)
+    {
+        IGNORE(value);
+        debug = true;
+    }, "Start the game in debug mode");
+
+    tkd::Args::handleArgs(argc, argv);
+
+    {
+        tkd::Engine engine(debug);
+        engine.start();
+    }
+
     return (EXIT_SUCCESS);
 }
 
