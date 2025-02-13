@@ -38,43 +38,32 @@ namespace tkd::States
 
 ///////////////////////////////////////////////////////////////////////////////
 void Test::init(void)
-{
-    // Here you can init every shapes/objects you will use such as:
-    // player|enemy|shapes|collider|levels...
-}
+{}
 
 ///////////////////////////////////////////////////////////////////////////////
 void Test::handleEvent(sf::Event event)
 {
     IGNORE(event);
-    // Here represent the loop after polling event from the window
-    // You can process each event separatly and for a better coding style
-    // You can create private function to handle some specific events
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Test::handlePacket(Packet packet)
 {
     IGNORE(packet);
-    // Here is the handling of the packet, for now, you don't need to worry
-    // about this part, only the great jesus lord know how this is working
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Test::update(float deltaT)
 {
-    IGNORE(deltaT);
-    // Updates ! Here all the movement, collision, calculation are done
-    // NO DISPLAY ! Except for ImGui that need to be encapsulated within
-    // the *m_debug property
+    m_player.update(deltaT);
+    m_player.updatePhysics(deltaT, m_room);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Test::render(void)
 {
-    // Rendering, this is for rendering only, if someone see a calculation here
-    // you can blame the author of this code !
-    // Throw them rocks !
+    m_room.render(*m_window);
+    m_player.render(*m_window);
 }
 
 } // namespace tkd::States
