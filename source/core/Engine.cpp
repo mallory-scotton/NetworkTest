@@ -29,7 +29,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "core/Engine.hpp"
 #include "states/MenuState.hpp"
-#include "states/TestState.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui-SFML.h"
 
@@ -45,7 +44,7 @@ Engine::Engine(bool debug)
     , m_debug(debug)
     , m_manager(m_window, &m_client, &m_debug)
 {
-    m_manager.push(std::make_unique<States::Test>());
+    m_manager.push(std::make_unique<States::Menu>());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
