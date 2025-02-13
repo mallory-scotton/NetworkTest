@@ -1,0 +1,135 @@
+///////////////////////////////////////////////////////////////////////////////
+///
+/// MIT License
+///
+/// Copyright(c) 2025 TekyoDrift
+///
+/// Permission is hereby granted, free of charge, to any person obtaining a
+/// copy of this software and associated documentation files (the "Software"),
+/// to deal in the Software without restriction, including without limitation
+/// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+/// and/or sell copies of the Software, and to permit persons to whom the
+/// Software is furnished to do so, subject to the following coditions:
+///
+/// The above copyright notice and this permission notice shall be included
+/// in all copies or substantial portions of the Software?
+///
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+/// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+/// DEALINGS IN THE SOFTWARE.
+///
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// Header guard
+///////////////////////////////////////////////////////////////////////////////
+#pragma once
+
+///////////////////////////////////////////////////////////////////////////////
+// Dependencies
+///////////////////////////////////////////////////////////////////////////////
+#include "utils/Vec2.hpp"
+#include "physics/Collider.hpp"
+#include "game/Room.hpp"
+#include <SFML/Graphics.hpp>
+#include <memory>
+#include <string>
+
+///////////////////////////////////////////////////////////////////////////////
+// Namespace tkd
+///////////////////////////////////////////////////////////////////////////////
+namespace tkd
+{
+
+///////////////////////////////////////////////////////////////////////////////
+/// \brief Entity class that will apply physics and collision checking with
+/// the room
+///
+///////////////////////////////////////////////////////////////////////////////
+class Entity
+{
+protected:
+    ///////////////////////////////////////////////////////////////////////////
+    // Protected properties
+    ///////////////////////////////////////////////////////////////////////////
+    Vec2f m_position;                       //<! The entity position
+    Vec2f m_velocity;                       //<! The entity velocity
+    std::unique_ptr<Collider> m_collider;   //<! The entity collider
+    bool m_active;                          //<! Is the entity active
+    int m_id;                               //<! The id of the entity (network)
+    bool m_onAir;
+
+public:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Default constructor
+    ///
+    /// \param position The entity position
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    Entity(const Vec2f& position);
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Destructor
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    virtual ~Entity() = default;
+
+private:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Handle collision with the room
+    ///
+    /// \param room The room reference to check collision with
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void handleCollision(const Room& room);
+
+public:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Update the entity behavior
+    ///
+    /// \param deltaT The delta time
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    virtual void update(float deltaT) = 0;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Handle collision with another entity
+    ///
+    /// \param other The other entity
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    virtual void handleCollision(Entity* other) = 0;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Render the entity
+    ///
+    /// \param window The window to render the entity on
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    virtual void render(sf::RenderWindow& window) = 0;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Update the entity physics base and resolve the collision with
+    /// the room
+    ///
+    /// \param deltaT The delta time to apply on calculation
+    /// \param room The room to check collision with
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void updatePhysics(float deltaT, const Room& room);
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Apply a force on the entity
+    ///
+    /// \param force The force to apply
+    /// \param deltaT The delta time
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void applyForce(const Vec2f& force, float deltaT);
+};
+
+} // namespace tkd
