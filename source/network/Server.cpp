@@ -81,6 +81,8 @@ Server::Server(Uint32 port)
 ///////////////////////////////////////////////////////////////////////////////
 Server::~Server()
 {
+    Packet packet(Packet::Type::Disconnect);
+    broadcastPacket(packet, -1);
     for (const auto& client : m_clients)
         closesocket(client.second->socket);
     closesocket(m_socket);
