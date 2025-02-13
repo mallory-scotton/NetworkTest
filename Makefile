@@ -60,9 +60,19 @@ HASH				=
 ###############################################################################
 
 SOURCE_DIRECTORY	=	source
+
 SOURCES				=	$(shell find $(SOURCE_DIRECTORY) -name '*.cpp')
-OBJECTS				=	$(SOURCES:.cpp=.o)
-DEPENDENCIES		=	$(SOURCES:.cpp=.d)
+
+SERVER_SOURCES		=	source/utils/Args.cpp \
+						source/network/Server.cpp \
+						source/network/ServerDiscovery.cpp \
+						source/network/Packet.cpp \
+						source/network/Network.cpp \
+						source/Main.cpp
+
+PACKER_SOURCES		=	source/resources/AssetsPacker.cpp \
+						source/resources/Compressor.cpp \
+						source/Main.cpp
 
 ###############################################################################
 ## Makefile logic
@@ -85,6 +95,12 @@ OK_COLOR			=	\033[0;32m
 ERROR_COLOR			=	\033[0;31m
 WARN_COLOR			=	\033[0;33m
 NO_COLOR			=	\033[m
+
+OBJECTS				=	$(SOURCES:.cpp=.o)
+SERVER_OBJECTS		=	$(SERVER_SOURCES:.cpp=.o)
+PACKER_OBJECTS		=	$(PACKER_SOURCES:.cpp=.o)
+
+DEPENDENCIES		=	$(SOURCES:.cpp=.d)
 
 ###############################################################################
 ## Makefile rules
@@ -131,10 +147,12 @@ debug: CXXFLAGS += -g3
 debug: build
 
 server: TARGET = $(SERVER_TARGET)
+server: OBJECTS = $(SERVER_OBJECTS)
 server: CXXFLAGS += -DNEON_SERVER
 server: clear build
 
 packer: TARGET = $(PACKER_TARGET)
+packer: OBJECTS = $(PACKER_OBJECTS)
 packer: CXXFLAGS += -DNEON_PACKER
 packer: clear build
 
