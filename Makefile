@@ -45,6 +45,7 @@ CXXFLAGS			=	-std=c++20 \
 
 TARGET				=	neon-abyss
 SERVER_TARGET		=	neon-abyss-server
+PACKER_TARGET		=	packer
 
 ###############################################################################
 ## Metadata
@@ -129,6 +130,10 @@ debug: build
 server: TARGET = $(SERVER_TARGET)
 server: CXXFLAGS += -DNEON_SERVER
 server: clear build
+
+packer: TARGET = $(PACKER_TARGET)
+packer: CXXFLAGS += -DNEON_PACKER
+packer: clear build
 
 clean:
 	@find . -type f -iname "*.o" -delete
