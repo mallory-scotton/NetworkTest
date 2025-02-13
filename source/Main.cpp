@@ -24,7 +24,7 @@
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef NEON_SERVER
+#if defined(NEON_SERVER)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Dependencies
@@ -103,6 +103,70 @@ int main(int argc, char *argv[])
         std::cerr << "Fatal error: " << e.what() << std::endl;
         return (EXIT_FAILURE);
     }
+    return (EXIT_SUCCESS);
+}
+
+#elif defined(NEON_PACKER)
+
+///////////////////////////////////////////////////////////////////////////////
+// Dependencies
+///////////////////////////////////////////////////////////////////////////////
+#include "utils/Types.hpp"
+#include "utils/Args.hpp"
+#include "resources/AssetsPacker.hpp"
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <unistd.h>
+
+int main(void)
+{
+    tkd::AssetsPacker packer;
+    std::string command;
+
+    bool isTerminal = isatty(fileno(stdin));
+
+    while (true) {
+        if (isTerminal)
+            std::cout << "packer> ";
+        std::getline(std::cin, command);
+
+        if (std::cin.eof())
+            break;
+
+        std::istringstream iss(command);
+        std::string token;
+        iss >> token;
+
+        if (token == "pack" || token == "p") {
+            std::string filename;
+            if (iss >> filename)
+                packer.pack(filename);
+            else std::cout << "Usage: pack <filename>" << std::endl;
+        } else if (token == "unpack" || token == "u") {
+            std::string filename;
+            if (iss >> filename)
+                try { packer.unpack(filename); }
+                catch (const std::exception& e) {}
+            else std::cout << "Usage: unpack <filename>" << std::endl;
+        } else if (token == "add" || token == "a") {
+            std::string filename;
+            if (iss >> filename) {
+                try {
+                    packer << filename;
+                } catch (const std::exception& error) {
+                    std::cout << "Error: " << error.what() << std::endl;
+                }
+            } else std::cout << "Usage: add <filename>" << std::endl;
+        } else if (token == "display" || token == "d") {
+            std::cout << packer;
+        } else if (token == "quit" || token == "q") {
+            break;
+        } else {
+            std::cout << "Unknown command: " << token << std::endl;
+        }
+    }
+
     return (EXIT_SUCCESS);
 }
 
