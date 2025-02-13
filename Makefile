@@ -102,14 +102,16 @@ PACKER_OBJECTS		=	$(PACKER_SOURCES:.cpp=.o)
 
 DEPENDENCIES		=	$(SOURCES:.cpp=.d)
 
+QUIET				?=	0
+
 ###############################################################################
 ## Makefile rules
 ###############################################################################
 
 all:
-	make build
-	make server
-	make packer
+	@make QUIET=0 -s build
+	@make QUIET=1 -s server
+	@make QUIET=1 -s packer
 
 -include $(DEPENDENCIES)
 
@@ -122,7 +124,9 @@ clear:
 
 header:
 	@printf "%b" "$(OK_COLOR)"
+ifeq ($(QUIET),0)
 	@cat .art
+endif
 	@echo
 ifneq ($(HASH),)
 	@printf "%b" "$(OBJ_COLOR)Name:	$(WARN_COLOR)$(TARGET)@$(HASH)\n"
