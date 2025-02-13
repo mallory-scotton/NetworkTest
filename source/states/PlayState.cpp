@@ -102,6 +102,11 @@ void Play::handlePacket(Packet packet)
                 m_enemies[id]->setPosition(pos);
             break;
         }
+        case Packet::Type::Disconnect:
+        {
+            m_manager->change(std::make_unique<States::Menu>());
+            break;
+        }
         default:
             break;
     }
@@ -149,6 +154,7 @@ void Play::update(float deltaT)
 ///////////////////////////////////////////////////////////////////////////////
 void Play::render(void)
 {
+    m_room.render(*m_window);
     m_player.render(*m_window);
     for (const auto& [id, enemy] : m_enemies)
         enemy->render(*m_window);

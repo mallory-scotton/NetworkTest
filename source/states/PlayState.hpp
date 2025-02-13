@@ -33,6 +33,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "GameState.hpp"
+#include "game/Room.hpp"
 #include <map>
 #include <memory>
 
@@ -108,6 +109,7 @@ private:
     Object m_player;
     std::map<int, std::unique_ptr<Object>> m_enemies;
     float m_speed = 150.f;
+    Room m_room;
 
 public:
     ///////////////////////////////////////////////////////////////////////////
