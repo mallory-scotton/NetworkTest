@@ -174,5 +174,6 @@ fclean: clean
 
 re: fclean build
 res: fclean server
+rep: fclean packer
 
 .PHONY: all build debug server clean fclean re res
