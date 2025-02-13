@@ -40,3 +40,6 @@ build/
 
 # Unignore Makefile
 !Makefile
+
+# Unignore AUTHORS
+!AUTHORS
