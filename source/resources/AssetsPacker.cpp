@@ -69,7 +69,7 @@ AssetsPacker& AssetsPacker::operator<<(const Path& filepath)
     auto raw = UData(std::istreambuf_iterator<char>(file), {});
     auto data = Compressor::compress(raw);
 
-    CompressedAsset asset{data, data.size(), type, {}};
+    CompressedAsset asset{data, raw.size(), type, {}};
 
     if (type == AssetType::Image) {
         sf::Image img;
