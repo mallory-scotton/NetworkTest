@@ -45,7 +45,7 @@ CXXFLAGS			=	-std=c++20 \
 
 TARGET				=	neon-abyss
 SERVER_TARGET		=	neon-abyss-server
-PACKER_TARGET		=	packer
+PACKER_TARGET		=	neon-abyss-packer
 
 ###############################################################################
 ## Metadata
