@@ -72,7 +72,18 @@ public:
     /// \return True if the collider are colliding, false otherwise
     ///
     ///////////////////////////////////////////////////////////////////////////
-    bool operator|(const Collider& other);
+    bool operator|(const Collider& other) const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Set the collider position
+    ///
+    /// \param position The new position
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void setPosition(const Vec2f& position);
+
+    Vec2f getPosition(void) const;
+    Vec2f getDimension(void) const;
 };
 
 } // namespace tkd

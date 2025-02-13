@@ -42,14 +42,32 @@ Collider::Collider(const Vec2f& position, const Vec2f& dimension)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
-bool Collider::operator|(const Collider& other)
+bool Collider::operator|(const Collider& other) const
 {
     return (
-        m_position.x < other.m_position.x + other.m_position.x &&
+        m_position.x < other.m_position.x + other.m_dimension.x &&
         m_position.x + m_dimension.x > other.m_position.x &&
         m_position.y < other.m_position.y + other.m_dimension.y &&
         m_position.y + m_dimension.y > other.m_position.y
     );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Collider::setPosition(const Vec2f& position)
+{
+    m_position = position;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Vec2f Collider::getPosition(void) const
+{
+    return (m_position);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Vec2f Collider::getDimension(void) const
+{
+    return (m_dimension);
 }
 
 } // namespace tkd
