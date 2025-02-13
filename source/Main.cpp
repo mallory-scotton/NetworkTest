@@ -160,6 +160,15 @@ int main(void)
             } else std::cout << "Usage: add <filename>" << std::endl;
         } else if (token == "display" || token == "d") {
             std::cout << packer;
+        } else if (token == "extract" || token == "e") {
+            std::string key;
+            if (iss >> key) {
+                std::optional<tkd::AssetsPacker::ImagePtr> image =
+                    packer.getImage(key);
+                if (!image)
+                    std::cout << "Cannot find: " << key << std::endl;
+                else image->get()->saveToFile(key);
+            } else std::cout << "Usage: extract <key>" << std::endl;
         } else if (token == "quit" || token == "q") {
             break;
         } else {
