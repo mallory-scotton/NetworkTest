@@ -45,11 +45,12 @@ Entity::Entity(const Vec2f& position)
 void Entity::updatePhysics(float deltaT, const Room& room)
 {
     static const float GRAVITY = 981.f;
-    static const float FRICTION = 80.f;
+    static const float FRICTION = .03f;
 
     applyForce(Vec2f(0.f, GRAVITY), deltaT);
 
-    m_velocity.x *= FRICTION * deltaT;
+    float frictionFactor = std::pow(deltaT, FRICTION);
+    m_velocity.x *= frictionFactor;
 
     m_position += m_velocity * deltaT;
 
