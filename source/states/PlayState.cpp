@@ -48,14 +48,12 @@ void Play::handleEvent(sf::Event event)
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Left)  m_left = true;
         if (event.key.code == sf::Keyboard::Right) m_right = true;
-        if (event.key.code == sf::Keyboard::Up)    m_up = true;
-        if (event.key.code == sf::Keyboard::Down)  m_down = true;
+        if (event.key.code == sf::Keyboard::Space) m_up = true;
     }
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::Left)  m_left = false;
         if (event.key.code == sf::Keyboard::Right) m_right = false;
-        if (event.key.code == sf::Keyboard::Up)    m_up = false;
-        if (event.key.code == sf::Keyboard::Down)  m_down = false;
+        if (event.key.code == sf::Keyboard::Space) m_up = false;
     }
 }
 
@@ -74,7 +72,7 @@ void Play::handlePacket(Packet packet)
             for (size_t i = 0; i < size; i++) {
                 int id = -1; Vec2f pos;
                 packet >> id >> pos;
-                m_enemies[id] = std::make_unique<Object>(sf::Color::Red);
+                m_enemies[id] = std::make_unique<Player>();
                 m_enemies[id]->setPosition(pos);
             }
             break;
@@ -83,7 +81,7 @@ void Play::handlePacket(Packet packet)
         {
             int id = -1; Vec2f pos;
             packet >> id >> pos;
-            m_enemies[id] = std::make_unique<Object>(sf::Color::Red);
+            m_enemies[id] = std::make_unique<Player>();
             m_enemies[id]->setPosition(pos);
             break;
         }
@@ -115,30 +113,22 @@ void Play::handlePacket(Packet packet)
 ///////////////////////////////////////////////////////////////////////////////
 void Play::update(float deltaT)
 {
-    if (*m_debug) {
-        ImGui::Begin("Parameters");
-        ImGui::SliderFloat("Speed", &m_speed, 0.f, 10000.f);
-        ImGui::End();
-    }
-
     if (!m_client->isConnected()) {
         m_manager->change(std::make_unique<States::Menu>());
         return;
     }
 
-    if (m_left || m_right || m_up || m_down) {
-        Vec2f movement;
+    static const float MOVE_FORCE = 50000.f;
+    static const float JUMP_FORCE = 6000.f;
 
-        if (m_left)  movement.x -= 1.f;
-        if (m_right) movement.x += 1.f;
-        if (m_up)    movement.y -= 1.f;
-        if (m_down)  movement.y += 1.f;
+    if (m_right)
+        m_player.applyForce(Vec2f(MOVE_FORCE, 0.f), deltaT);
+    if (m_left)
+        m_player.applyForce(Vec2f(-MOVE_FORCE, 0.f), deltaT);
+    if (m_up && m_player.onGround())
+        m_player.setVelocity(Vec2f(m_player.getVelocity().x, -JUMP_FORCE));
 
-        movement *= deltaT;
-        movement *= m_speed;
-
-        m_player.move(movement);
-
+    if (!m_player.getVelocity().equals(0.f, 0.001f)) {
         tkd::Packet packet(
             tkd::Packet::Type::PlayerMove,
             m_player.getPosition()
@@ -146,9 +136,10 @@ void Play::update(float deltaT)
         m_client->sendPacket(packet);
     }
 
-    m_player.update();
+    m_player.update(deltaT);
+    m_player.updatePhysics(deltaT, m_room);
     for (const auto& [id, enemy] : m_enemies)
-        enemy->update();
+        enemy->update(deltaT);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -34,6 +34,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "GameState.hpp"
 #include "game/Room.hpp"
+#include "game/Player.hpp"
 #include <map>
 #include <memory>
 
@@ -42,55 +43,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace tkd::States
 {
-
-class Object
-{
-private:
-    sf::Color m_color;
-    tkd::Vec2f m_position;
-    sf::CircleShape m_shape;
-
-public:
-    Object(sf::Color color = sf::Color::Green)
-        : m_color(color)
-        , m_position(0.f)
-    {
-        m_shape.setRadius(20.f);
-        m_shape.setOrigin(Vec2f(10.f));
-        m_shape.setFillColor(color);
-    }
-
-public:
-    void update(void)
-    {
-        m_shape.setPosition(m_position);
-    }
-
-    void render(sf::RenderWindow& window)
-    {
-        window.draw(m_shape);
-    }
-
-    void move(const tkd::Vec2f& velocity)
-    {
-        m_position += velocity;
-
-        if (m_position.x < 10) m_position.x = 10;
-        if (m_position.x > 790) m_position.x = 790;
-        if (m_position.y < 10) m_position.y = 10;
-        if (m_position.y > 590) m_position.y = 590;
-    }
-
-    tkd::Vec2f getPosition(void) const
-    {
-        return (m_position);
-    }
-
-    void setPosition(const tkd::Vec2f& position)
-    {
-        m_position = position;
-    }
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 /// \brief play state class
@@ -102,13 +54,9 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     // Private properties
     ///////////////////////////////////////////////////////////////////////////
-    bool m_left = false;
-    bool m_right = false;
-    bool m_up = false;
-    bool m_down = false;
-    Object m_player;
-    std::map<int, std::unique_ptr<Object>> m_enemies;
-    float m_speed = 150.f;
+    bool m_left = false, m_right = false, m_up = false;
+    Player m_player;
+    std::map<int, std::unique_ptr<Player>> m_enemies;
     Room m_room;
 
 public:
