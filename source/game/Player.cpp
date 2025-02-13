@@ -52,15 +52,7 @@ Player::Player(void)
 ///////////////////////////////////////////////////////////////////////////////
 void Player::update(float deltaT)
 {
-    static const float MOVE_FORCE = 50000.f;
-    static const float JUMP_FORCE = 6000.f;
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        applyForce(Vec2f(MOVE_FORCE, 0.f), deltaT);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        applyForce(Vec2f(-MOVE_FORCE, 0.f), deltaT);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !m_onAir)
-        m_velocity.y = -JUMP_FORCE;
+    IGNORE(deltaT);
     m_shape.setPosition(m_position);
 }
 
@@ -73,7 +65,6 @@ void Player::handleCollision(Entity* other)
 ///////////////////////////////////////////////////////////////////////////////
 void Player::render(sf::RenderWindow& window)
 {
-    IGNORE(window);
     window.draw(m_shape);
 }
 
