@@ -45,7 +45,7 @@ Entity::Entity(const Vec2f& position)
 void Entity::updatePhysics(float deltaT, const Room& room)
 {
     static const float GRAVITY = 981.f;
-    static const float FRICTION = .08f;
+    static const float FRICTION = .001f;
 
     applyForce(Vec2f(0.f, GRAVITY), deltaT);
 
