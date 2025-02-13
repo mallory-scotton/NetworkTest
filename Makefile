@@ -90,9 +90,12 @@ NO_COLOR			=	\033[m
 ## Makefile rules
 ###############################################################################
 
--include $(DEPENDENCIES)
+all:
+	make build
+	make server
+	make packer
 
-all: build
+-include $(DEPENDENCIES)
 
 %.o: %.cpp
 	@./scripts/progress.sh
