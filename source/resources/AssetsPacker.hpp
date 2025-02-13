@@ -122,6 +122,8 @@ public:
     std::optional<DataPtr> getData(const std::string& key);
 
     std::unordered_map<std::string, CompressedAsset> getAssets(void) const;
+
+    void clear(void);
 };
 
 std::ostream& operator<<(std::ostream& os, const AssetsPacker& packer);

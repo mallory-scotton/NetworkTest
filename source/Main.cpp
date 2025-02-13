@@ -160,6 +160,8 @@ int main(void)
             } else std::cout << "Usage: add <filename>" << std::endl;
         } else if (token == "display" || token == "d") {
             std::cout << packer;
+        } else if (token == "clear") {
+            packer.clear();
         } else if (token == "extract" || token == "e") {
             std::string key;
             if (iss >> key) {
