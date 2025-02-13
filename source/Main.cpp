@@ -112,7 +112,6 @@ int main(int argc, char *argv[])
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "utils/Types.hpp"
-#include "utils/Args.hpp"
 #include "resources/AssetsPacker.hpp"
 #include <string>
 #include <iostream>
