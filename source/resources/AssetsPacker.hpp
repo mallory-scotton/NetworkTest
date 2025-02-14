@@ -107,10 +107,13 @@ public:
     AssetsPacker(int level = Z_DEFAULT_COMPRESSION);
 
 public:
-    AssetsPacker& operator<<(const Path& filepath);
+    AssetsPacker& operator<<(const std::pair<std::string, Path>& entry);
 
 private:
     AssetType detectAssetType(const Path& filepath);
+
+public:
+    static std::string formatSize(size_t size);
 
 public:
     void pack(const std::string& filename) const;
@@ -120,6 +123,8 @@ public:
     std::optional<SoundPtr> getSound(const std::string& key);
     std::optional<FontPtr> getFont(const std::string& key);
     std::optional<DataPtr> getData(const std::string& key);
+
+    void addAsset(const std::string& key, const Path& filepath);
 
     std::unordered_map<std::string, CompressedAsset> getAssets(void) const;
 

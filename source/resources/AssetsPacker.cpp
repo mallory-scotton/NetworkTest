@@ -56,8 +56,13 @@ AssetsPacker::AssetsPacker(int level)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
-AssetsPacker& AssetsPacker::operator<<(const Path& filepath)
+AssetsPacker& AssetsPacker::operator<<(
+    const std::pair<std::string, Path>& entry
+)
 {
+    const std::string& key = entry.first;
+    const Path& filepath = entry.second;
+
     AssetType type = detectAssetType(filepath);
     if (type == AssetType::Unknown)
         throw std::runtime_error("Unknown asset type: " + filepath.string());
@@ -86,7 +91,7 @@ AssetsPacker& AssetsPacker::operator<<(const Path& filepath)
         }
     }
 
-    m_assets[filepath.filename().string()] = std::move(asset);
+    m_assets[key] = std::move(asset);
     return (*this);
 }
 
@@ -103,6 +108,23 @@ AssetsPacker::AssetType AssetsPacker::detectAssetType(const Path& filepath)
     if (ext == ".bin" || ext == ".dat")
         return (AssetType::Data);
     return (AssetType::Unknown);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+std::string AssetsPacker::formatSize(size_t size)
+{
+    const char* units[] = {"o", "Ko", "Mo", "Go"};
+    int idx = 0;
+    double fSize = static_cast<double>(size);
+
+    while (fSize >= 1024.0 && idx < 3) {
+        fSize /= 1024.0;
+        idx++;
+    }
+
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(2) << fSize << " " << units[idx];
+    return (oss.str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -203,6 +225,12 @@ void AssetsPacker::unpack(const std::string& filename)
         // Save the asset in the map of assets
         m_assets[key] = std::move(asset);
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void AssetsPacker::addAsset(const std::string& key, const Path& filepath)
+{
+    *this << std::make_pair(key, filepath);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -322,8 +350,7 @@ std::ostream& operator<<(std::ostream& os, const AssetsPacker& packer)
         os << ' ' << key;
         for (size_t i = key.length(); i < length + 4; i++)
             os << ' ';
-        os << asset.size / 1024.f << " Ko";
-        os << std::endl;
+        os  << AssetsPacker::formatSize(asset.size) << std::endl;
         idx++;
     }
     os << std::defaultfloat;
