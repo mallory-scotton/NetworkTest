@@ -150,13 +150,14 @@ int main(void)
             else std::cout << "Usage: unpack <filename>" << std::endl;
         } else if (token == "add" || token == "a") {
             std::string filename;
-            if (iss >> filename) {
+            std::string key;
+            if (iss >> filename >> key) {
                 try {
-                    packer << filename;
+                    packer.addAsset(key, filename);
                 } catch (const std::exception& error) {
                     std::cout << "Error: " << error.what() << std::endl;
                 }
-            } else std::cout << "Usage: add <filename>" << std::endl;
+            } else std::cout << "Usage: add <filename> <key>" << std::endl;
         } else if (token == "display" || token == "d") {
             std::cout << packer;
         } else if (token == "clear") {
