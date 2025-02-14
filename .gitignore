@@ -23,6 +23,9 @@ build/
 *.ini
 *.env
 
+# Do not push the assets
+assets/
+
 # Unit tests files
 *.gcda
 *.gcno
